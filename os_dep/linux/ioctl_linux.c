@@ -11316,8 +11316,7 @@ static int rtw_mp_read_reg(struct net_device *dev,
 						   tmp[j]=' ';
 						   j++;
 					  }
-					  if ( data[i] != '\0' )
-					 	 tmp[j] = data[i];
+					  if ( data[i] != '\0' ) tmp[j] = data[i];
 
 					  	 j++;
 				}
