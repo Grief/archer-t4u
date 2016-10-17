@@ -1623,11 +1623,9 @@ ifeq ($(CONFIG_RTL8821A), y)
 $(MODULE_NAME)-$(CONFIG_MP_INCLUDED)+= core/rtw_bt_mp.o
 endif
 
-obj-$(CONFIG_RTL8812AU) := $(MODULE_NAME).o
+obj-m:= $(MODULE_NAME).o
 
 else
-
-export CONFIG_RTL8812AU = m
 
 all: modules
 
