@@ -143,7 +143,7 @@ static bool _rtw_is_radar_freq(u16 center_freq)
 static void _rtw_reg_apply_beaconing_flags(struct wiphy *wiphy,
 					   enum nl80211_reg_initiator initiator)
 {
-	enum ieee80211_band band;
+	enum nl80211_band band;
 	struct ieee80211_supported_band *sband;
 	const struct ieee80211_reg_rule *reg_rule;
 	struct ieee80211_channel *ch;
@@ -151,7 +151,7 @@ static void _rtw_reg_apply_beaconing_flags(struct wiphy *wiphy,
 	u32 bandwidth = 0;
 	int r;
 
-	for (band = 0; band < IEEE80211_NUM_BANDS; band++) {
+	for (band = 0; band < NUM_NL80211_BANDS; band++) {
 
 		if (!wiphy->bands[band])
 			continue;
@@ -205,9 +205,9 @@ static void _rtw_reg_apply_active_scan_flags(struct wiphy *wiphy,
 	u32 bandwidth = 0;
 	int r;
 
-	if (!wiphy->bands[IEEE80211_BAND_2GHZ])
+	if (!wiphy->bands[NL80211_BAND_2GHZ])
 		return;
-	sband = wiphy->bands[IEEE80211_BAND_2GHZ];
+	sband = wiphy->bands[NL80211_BAND_2GHZ];
 
 	/*
 	 * If no country IE has been received always enable active scan
@@ -258,10 +258,10 @@ static void _rtw_reg_apply_radar_flags(struct wiphy *wiphy)
 	struct ieee80211_channel *ch;
 	unsigned int i;
 
-	if (!wiphy->bands[IEEE80211_BAND_5GHZ])
+	if (!wiphy->bands[NL80211_BAND_5GHZ])
 		return;
 
-	sband = wiphy->bands[IEEE80211_BAND_5GHZ];
+	sband = wiphy->bands[NL80211_BAND_5GHZ];
 
 	for (i = 0; i < sband->n_channels; i++) {
 		ch = &sband->channels[i];
@@ -303,12 +303,12 @@ static int rtw_ieee80211_channel_to_frequency(int chan, int band)
 	/* see 802.11 17.3.8.3.2 and Annex J
 	 * there are overlapping channel numbers in 5GHz and 2GHz bands */
 
-	if (band == IEEE80211_BAND_5GHZ) {
+	if (band == NL80211_BAND_5GHZ) {
 		if (chan >= 182 && chan <= 196)
 			return 4000 + chan * 5;
 		else
 			return 5000 + chan * 5;
-	} else {		/* IEEE80211_BAND_2GHZ */
+	} else {		/* NL80211_BAND_2GHZ */
 		if (chan == 14)
 			return 2484;
 		else if (chan < 14)
@@ -334,7 +334,7 @@ static void _rtw_reg_apply_flags(struct wiphy *wiphy)
 	u32 freq;
 
 	// all channels disable
-	for (i = 0; i < IEEE80211_NUM_BANDS; i++) {
+	for (i = 0; i < NUM_NL80211_BANDS; i++) {
 		sband = wiphy->bands[i];
 
 		if (sband) {
@@ -353,11 +353,11 @@ static void _rtw_reg_apply_flags(struct wiphy *wiphy)
 		if (channel <= 14)
 			freq =
 			    rtw_ieee80211_channel_to_frequency(channel,
-							       IEEE80211_BAND_2GHZ);
+							       NL80211_BAND_2GHZ);
 		else
 			freq =
 			    rtw_ieee80211_channel_to_frequency(channel,
-							       IEEE80211_BAND_5GHZ);
+							       NL80211_BAND_5GHZ);
 
 
 		ch = ieee80211_get_channel(wiphy, freq);
@@ -388,7 +388,7 @@ static void _rtw_reg_apply_flags(struct wiphy *wiphy)
 	u16 channel;
 	u32 freq;
 
-	for (i = 0; i < IEEE80211_NUM_BANDS; i++) {
+	for (i = 0; i < NUM_NL80211_BANDS; i++) {
 		sband = wiphy->bands[i];
 
 		if (sband)
@@ -405,11 +405,11 @@ static void _rtw_reg_apply_flags(struct wiphy *wiphy)
 		if (channel <= 14)
 			freq =
 			    rtw_ieee80211_channel_to_frequency(channel,
-							       IEEE80211_BAND_2GHZ);
+							       NL80211_BAND_2GHZ);
 		else
 			freq =
 			    rtw_ieee80211_channel_to_frequency(channel,
-							       IEEE80211_BAND_5GHZ);
+							       NL80211_BAND_5GHZ);
 
 		ch = ieee80211_get_channel(wiphy, freq);
 		if (ch) {

@@ -50,7 +50,10 @@ struct sk_buff * dbg_rtw_cfg80211_vendor_event_alloc(struct wiphy *wiphy, int le
 	struct sk_buff *skb;
 	unsigned int truesize = 0;
 
-	skb = cfg80211_vendor_event_alloc(wiphy, len, event_id, gfp);
+	_adapter *padapter = wiphy_to_adapter(wiphy);
+	struct wireless_dev *wdev = padapter->rtw_wdev;
+
+	skb = cfg80211_vendor_event_alloc(wiphy, wdev, len, event_id, gfp);
 
 	if(skb)
 		truesize = skb->truesize;
@@ -140,7 +143,7 @@ int dbg_rtw_cfg80211_vendor_cmd_reply(struct sk_buff *skb
 		dbg_rtw_cfg80211_vendor_cmd_reply(skb, MSTAT_FUNC_CFG_VENDOR|MSTAT_TYPE_SKB, __FUNCTION__, __LINE__)
 #else
 #define rtw_cfg80211_vendor_event_alloc(wiphy, len, event_id, gfp) \
-	cfg80211_vendor_event_alloc(wiphy, len, event_id, gfp)
+	cfg80211_vendor_event_alloc(wiphy, wiphy_to_adapter(wiphy)->rtw_wdev, len, event_id, gfp)
 	
 #define rtw_cfg80211_vendor_event(skb, gfp) \
 	cfg80211_vendor_event(skb, gfp)

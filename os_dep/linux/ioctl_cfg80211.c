@@ -81,7 +81,7 @@ static const u32 rtw_cipher_suites[] = {
 	}
 
 #define CHAN2G(_channel, _freq, _flags) {			\
-	.band			= IEEE80211_BAND_2GHZ,		\
+	.band			= NL80211_BAND_2GHZ,		\
 	.center_freq		= (_freq),			\
 	.hw_value		= (_channel),			\
 	.flags			= (_flags),			\
@@ -90,7 +90,7 @@ static const u32 rtw_cipher_suites[] = {
 }
 
 #define CHAN5G(_channel, _flags) {				\
-	.band			= IEEE80211_BAND_5GHZ,		\
+	.band			= NL80211_BAND_5GHZ,		\
 	.center_freq		= 5000 + (5 * (_channel)),	\
 	.hw_value		= (_channel),			\
 	.flags			= (_flags),			\
@@ -207,18 +207,18 @@ void rtw_5g_rates_init(struct ieee80211_rate *rates)
 }
 
 struct ieee80211_supported_band *rtw_spt_band_alloc(
-	enum ieee80211_band band
+	enum nl80211_band band
 	)
 {
 	struct ieee80211_supported_band *spt_band = NULL;
 	int n_channels, n_bitrates;
 
-	if(band == IEEE80211_BAND_2GHZ)
+	if(band == NL80211_BAND_2GHZ)
 	{
 		n_channels = RTW_2G_CHANNELS_NUM;
 		n_bitrates = RTW_G_RATES_NUM;
 	}
-	else if(band == IEEE80211_BAND_5GHZ)
+	else if(band == NL80211_BAND_5GHZ)
 	{
 		n_channels = RTW_5G_CHANNELS_NUM;
 		n_bitrates = RTW_A_RATES_NUM;
@@ -242,12 +242,12 @@ struct ieee80211_supported_band *rtw_spt_band_alloc(
 	spt_band->n_channels = n_channels;
 	spt_band->n_bitrates = n_bitrates;
 
-	if(band == IEEE80211_BAND_2GHZ)
+	if(band == NL80211_BAND_2GHZ)
 	{
 		rtw_2g_channels_init(spt_band->channels);
 		rtw_2g_rates_init(spt_band->bitrates);
 	}
-	else if(band == IEEE80211_BAND_5GHZ)
+	else if(band == NL80211_BAND_5GHZ)
 	{
 		rtw_5g_channels_init(spt_band->channels);
 		rtw_5g_rates_init(spt_band->bitrates);
@@ -267,13 +267,13 @@ void rtw_spt_band_free(struct ieee80211_supported_band *spt_band)
 	if(!spt_band)
 		return;
 	
-	if(spt_band->band == IEEE80211_BAND_2GHZ)
+	if(spt_band->band == NL80211_BAND_2GHZ)
 	{
 		size = sizeof(struct ieee80211_supported_band)
 			+ sizeof(struct ieee80211_channel)*RTW_2G_CHANNELS_NUM
 			+ sizeof(struct ieee80211_rate)*RTW_G_RATES_NUM;
 	}
-	else if(spt_band->band == IEEE80211_BAND_5GHZ)
+	else if(spt_band->band == NL80211_BAND_5GHZ)
 	{
 		size = sizeof(struct ieee80211_supported_band)
 			+ sizeof(struct ieee80211_channel)*RTW_5G_CHANNELS_NUM
@@ -342,12 +342,12 @@ static int rtw_ieee80211_channel_to_frequency(int chan, int band)
 	/* see 802.11 17.3.8.3.2 and Annex J
 	* there are overlapping channel numbers in 5GHz and 2GHz bands */
            
-	if (band == IEEE80211_BAND_5GHZ) {
+	if (band == NL80211_BAND_5GHZ) {
        	if (chan >= 182 && chan <= 196)
 			return 4000 + chan * 5;
              else
                     return 5000 + chan * 5;
-       } else { /* IEEE80211_BAND_2GHZ */
+       } else { /* NL80211_BAND_2GHZ */
 		if (chan == 14)
 			return 2484;
              else if (chan < 14)
@@ -469,9 +469,9 @@ struct cfg80211_bss *rtw_cfg80211_inform_bss(_adapter *padapter, struct wlan_net
 					DBG_871X("%s, got sr, but ssid mismatch, to remove this bss\n", __func__);
 
 					if (pselect_network->Configuration.DSConfig <= RTW_CH_MAX_2G_CHANNEL)
-						freq = rtw_ieee80211_channel_to_frequency(pselect_network->Configuration.DSConfig, IEEE80211_BAND_2GHZ);
+						freq = rtw_ieee80211_channel_to_frequency(pselect_network->Configuration.DSConfig, NL80211_BAND_2GHZ);
 					else
-						freq = rtw_ieee80211_channel_to_frequency(pselect_network->Configuration.DSConfig, IEEE80211_BAND_5GHZ);
+						freq = rtw_ieee80211_channel_to_frequency(pselect_network->Configuration.DSConfig, NL80211_BAND_5GHZ);
 
 					notify_channel = ieee80211_get_channel(wiphy, freq);
 					pselect_bss = cfg80211_get_bss(wiphy, NULL/*notify_channel*/,
@@ -503,9 +503,9 @@ struct cfg80211_bss *rtw_cfg80211_inform_bss(_adapter *padapter, struct wlan_net
 
 	channel = pnetwork->network.Configuration.DSConfig;
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 	
 	notify_channel = ieee80211_get_channel(wiphy, freq);
 
@@ -648,9 +648,9 @@ int rtw_cfg80211_check_bss(_adapter *padapter)
 		return _FALSE;
 
 	if (pnetwork->Configuration.DSConfig <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(pnetwork->Configuration.DSConfig, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(pnetwork->Configuration.DSConfig, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(pnetwork->Configuration.DSConfig, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(pnetwork->Configuration.DSConfig, NL80211_BAND_5GHZ);
 
 	notify_channel = ieee80211_get_channel(padapter->rtw_wdev->wiphy, freq);
 	bss = cfg80211_get_bss(padapter->rtw_wdev->wiphy, notify_channel,
@@ -683,9 +683,9 @@ void rtw_cfg80211_ibss_indicate_connect(_adapter *padapter)
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))	
 	if (cur_network->network.Configuration.DSConfig <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(cur_network->network.Configuration.DSConfig, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(cur_network->network.Configuration.DSConfig, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(cur_network->network.Configuration.DSConfig, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(cur_network->network.Configuration.DSConfig, NL80211_BAND_5GHZ);
 	
 	if (0)
 		DBG_871X("chan: %d, freq: %d\n", cur_network->network.Configuration.DSConfig, freq);
@@ -823,9 +823,9 @@ check_bss:
 		u16 channel = cur_network->network.Configuration.DSConfig;
 
 		if (channel <= RTW_CH_MAX_2G_CHANNEL)
-			freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+			freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 		else
-			freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+			freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 
 		notify_channel = ieee80211_get_channel(wiphy, freq);
 		#endif
@@ -901,7 +901,7 @@ void rtw_cfg80211_indicate_disconnect(_adapter *padapter)
 			cfg80211_connect_result(padapter->pnetdev, NULL, NULL, 0, NULL, 0, 
 				WLAN_STATUS_UNSPECIFIED_FAILURE, GFP_ATOMIC/*GFP_KERNEL*/);
 		else if(pwdev->sme_state==CFG80211_SME_CONNECTED)
-			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, GFP_ATOMIC);
+			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, true, GFP_ATOMIC);
 		//else
 			//DBG_8192C("pwdev->sme_state=%d\n", pwdev->sme_state);
 
@@ -909,7 +909,7 @@ void rtw_cfg80211_indicate_disconnect(_adapter *padapter)
 		#else
 
 		if(check_fwstate(&padapter->mlmepriv, _FW_LINKED))		
-			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, GFP_ATOMIC);
+			cfg80211_disconnected(padapter->pnetdev, 0, NULL, 0, true, GFP_ATOMIC);
 		else
 			cfg80211_connect_result(padapter->pnetdev, NULL, NULL, 0, NULL, 0, 
 				WLAN_STATUS_UNSPECIFIED_FAILURE, GFP_ATOMIC/*GFP_KERNEL*/);
@@ -1825,16 +1825,16 @@ static int cfg80211_rtw_get_station(struct wiphy *wiphy,
 			goto exit;
 		}
 
-		sinfo->filled |= STATION_INFO_SIGNAL;
+		sinfo->filled |= BIT(NL80211_STA_INFO_SIGNAL);
 		sinfo->signal = translate_percentage_to_dbm(padapter->recvpriv.signal_strength);
 
-		sinfo->filled |= STATION_INFO_TX_BITRATE;
+		sinfo->filled |= BIT(NL80211_STA_INFO_TX_BITRATE);
 		sinfo->txrate.legacy = rtw_get_cur_max_rate(padapter);
 
-		sinfo->filled |= STATION_INFO_RX_PACKETS;
+		sinfo->filled |= BIT(NL80211_STA_INFO_RX_PACKETS);
 		sinfo->rx_packets = sta_rx_data_pkts(psta);
 
-		sinfo->filled |= STATION_INFO_TX_PACKETS;
+		sinfo->filled |= BIT(NL80211_STA_INFO_TX_PACKETS);
 		sinfo->tx_packets = psta->sta_stats.tx_pkts;
 
 	}
@@ -2016,7 +2016,10 @@ void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted)
 		}
 		else
 		{
-			cfg80211_scan_done(pwdev_priv->scan_request, aborted);
+			struct cfg80211_scan_info info;
+			memset(&info, 0, sizeof(info));
+			info.aborted = aborted;
+			cfg80211_scan_done(pwdev_priv->scan_request, &info);
 		}
 
 		pwdev_priv->scan_request = NULL;
@@ -3573,7 +3576,6 @@ void rtw_cfg80211_indicate_sta_assoc(_adapter *padapter, u8 *pmgmt_frame, uint f
 			ie_offset = _REASOCREQ_IE_OFFSET_;
 	
 		sinfo.filled = 0;
-		sinfo.filled = STATION_INFO_ASSOC_REQ_IES;
 		sinfo.assoc_req_ies = pmgmt_frame + WLAN_HDR_A3_LEN + ie_offset;
 		sinfo.assoc_req_ies_len = frame_len - WLAN_HDR_A3_LEN - ie_offset;
 		cfg80211_new_sta(ndev, GetAddr2Ptr(pmgmt_frame), &sinfo, GFP_ATOMIC);
@@ -3581,9 +3583,9 @@ void rtw_cfg80211_indicate_sta_assoc(_adapter *padapter, u8 *pmgmt_frame, uint f
 #else /* defined(RTW_USE_CFG80211_STA_EVENT) */
 	channel = pmlmeext->cur_channel;
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 
 	#ifdef COMPAT_KERNEL_RELEASE
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
@@ -3626,9 +3628,9 @@ void rtw_cfg80211_indicate_sta_disassoc(_adapter *padapter, unsigned char *da, u
 #else /* defined(RTW_USE_CFG80211_STA_EVENT) */
 	channel = pmlmeext->cur_channel;
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 
 	pmgmt_frame = mgmt_buf;	
 	pwlanhdr = (struct rtw_ieee80211_hdr *)pmgmt_frame;
@@ -3963,7 +3965,8 @@ static int
 		const char *name,
 	#else
 		char *name,
-	#endif
+    #endif
+        unsigned char name_assign_type,
 		enum nl80211_iftype type, u32 *flags, struct vif_params *params)
 {
 	int ret = 0;
@@ -4278,14 +4281,9 @@ exit:
 }
 
 static int	cfg80211_rtw_del_station(struct wiphy *wiphy, struct net_device *ndev,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(3,16,0))
-				u8 *mac
-#else
-				const u8 *mac
-#endif
-			       )
-{
-	int ret=0;	
+		struct station_del_parameters *params) {
+	const u8 *mac;
+	int ret=0;
 	_irqL irqL;
 	_list	*phead, *plist;
 	u8 updated = _FALSE;
@@ -4391,7 +4389,8 @@ static int	cfg80211_rtw_change_station(struct wiphy *wiphy, struct net_device *n
 
 struct sta_info *rtw_sta_info_get_by_idx(const int idx, struct sta_priv *pstapriv)
 
-{
+{
+
 	_list	*phead, *plist;
 	struct sta_info *psta = NULL;
 	int i = 0;
@@ -4431,7 +4430,7 @@ static int	cfg80211_rtw_dump_station(struct wiphy *wiphy, struct net_device *nde
 	}
 	_rtw_memcpy(mac, psta->hwaddr, ETH_ALEN);
 	sinfo->filled = 0;
-	sinfo->filled |= STATION_INFO_SIGNAL;
+	sinfo->filled |= BIT(NL80211_STA_INFO_SIGNAL);
 	sinfo->signal = psta->rssi;
 	
 exit:
@@ -4512,9 +4511,9 @@ void rtw_cfg80211_rx_action_p2p(_adapter *padapter, u8 *pmgmt_frame, uint frame_
 
 indicate:
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) || defined(COMPAT_KERNEL_RELEASE)
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
@@ -4552,9 +4551,9 @@ void rtw_cfg80211_rx_p2p_action_public(_adapter *padapter, u8 *pmgmt_frame, uint
 
 indicate:
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) || defined(COMPAT_KERNEL_RELEASE)
 	rtw_cfg80211_rx_mgmt(padapter, freq, 0, pmgmt_frame, frame_len, GFP_ATOMIC);
@@ -4585,9 +4584,9 @@ void rtw_cfg80211_rx_action(_adapter *adapter, u8 *frame, uint frame_len, const 
 	}
 
 	if (channel <= RTW_CH_MAX_2G_CHANNEL)
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_2GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_2GHZ);
 	else
-		freq = rtw_ieee80211_channel_to_frequency(channel, IEEE80211_BAND_5GHZ);
+		freq = rtw_ieee80211_channel_to_frequency(channel, NL80211_BAND_5GHZ);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)) || defined(COMPAT_KERNEL_RELEASE)
 	rtw_cfg80211_rx_mgmt(adapter, freq, 0, frame, frame_len, GFP_ATOMIC);
@@ -6038,7 +6037,7 @@ int rtw_cfg80211_set_mgnt_wpsp2pie(struct net_device *net, char *buf, int len,
 	
 }
 
-static void rtw_cfg80211_init_ht_capab(struct ieee80211_sta_ht_cap *ht_cap, enum ieee80211_band band, u8 rf_type)
+static void rtw_cfg80211_init_ht_capab(struct ieee80211_sta_ht_cap *ht_cap, enum nl80211_band band, u8 rf_type)
 {
 
 #define MAX_BIT_RATE_40MHZ_MCS15 	300	/* Mbps */
@@ -6062,7 +6061,7 @@ static void rtw_cfg80211_init_ht_capab(struct ieee80211_sta_ht_cap *ht_cap, enum
 	ht_cap->mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
 
 	/*
-	 *hw->wiphy->bands[IEEE80211_BAND_2GHZ]
+	 *hw->wiphy->bands[NL80211_BAND_2GHZ]
 	 *base on ant_num
 	 *rx_mask: RX mask
 	 *if rx_ant =1 rx_mask[0]=0xff;==>MCS0-MCS7
@@ -6107,16 +6106,16 @@ void rtw_cfg80211_init_wiphy(_adapter *padapter)
 
 	if (padapter->registrypriv.wireless_mode & WIRELESS_11G)
 	{
-		bands = wiphy->bands[IEEE80211_BAND_2GHZ];
+		bands = wiphy->bands[NL80211_BAND_2GHZ];
 		if(bands)
-			rtw_cfg80211_init_ht_capab(&bands->ht_cap, IEEE80211_BAND_2GHZ, rf_type);
+			rtw_cfg80211_init_ht_capab(&bands->ht_cap, NL80211_BAND_2GHZ, rf_type);
 	}
 
 	if (padapter->registrypriv.wireless_mode & WIRELESS_11A)
 	{
-		bands = wiphy->bands[IEEE80211_BAND_5GHZ];
+		bands = wiphy->bands[NL80211_BAND_5GHZ];
 		if(bands)
-			rtw_cfg80211_init_ht_capab(&bands->ht_cap, IEEE80211_BAND_5GHZ, rf_type);
+			rtw_cfg80211_init_ht_capab(&bands->ht_cap, NL80211_BAND_5GHZ, rf_type);
 	}
 
 	/* init regulary domain */
@@ -6198,10 +6197,10 @@ static void rtw_cfg80211_preinit_wiphy(_adapter *padapter, struct wiphy *wiphy)
 	wiphy->n_cipher_suites = ARRAY_SIZE(rtw_cipher_suites);
 
 	/* if (padapter->registrypriv.wireless_mode & WIRELESS_11G) */
-		wiphy->bands[IEEE80211_BAND_2GHZ] = rtw_spt_band_alloc(IEEE80211_BAND_2GHZ);
-#ifdef CONFIG_IEEE80211_BAND_5GHZ
+		wiphy->bands[NL80211_BAND_2GHZ] = rtw_spt_band_alloc(NL80211_BAND_2GHZ);
+#ifdef CONFIG_NL80211_BAND_5GHZ
 	/* if (padapter->registrypriv.wireless_mode & WIRELESS_11A) */
-		wiphy->bands[IEEE80211_BAND_5GHZ] = rtw_spt_band_alloc(IEEE80211_BAND_5GHZ);
+		wiphy->bands[NL80211_BAND_5GHZ] = rtw_spt_band_alloc(NL80211_BAND_5GHZ);
 #endif
 	
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38) && LINUX_VERSION_CODE < KERNEL_VERSION(3,0,0))
@@ -6411,8 +6410,8 @@ void rtw_wdev_free(struct wireless_dev *wdev)
 	if (!wdev)
 		return;
 
-	rtw_spt_band_free(wdev->wiphy->bands[IEEE80211_BAND_2GHZ]);
-	rtw_spt_band_free(wdev->wiphy->bands[IEEE80211_BAND_5GHZ]);
+	rtw_spt_band_free(wdev->wiphy->bands[NL80211_BAND_2GHZ]);
+	rtw_spt_band_free(wdev->wiphy->bands[NL80211_BAND_5GHZ]);
 	
 	wiphy_free(wdev->wiphy);
 

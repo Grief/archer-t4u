@@ -11318,7 +11318,7 @@ static int rtw_mp_read_reg(struct net_device *dev,
 					  }
 					  if ( data[i] != '\0' )
 					 	 tmp[j] = data[i];
-					 	
+
 					  	 j++;
 				}
 				pch = tmp;		
@@ -15705,7 +15705,7 @@ static int rtw_ioctl_standard_wext_private(struct net_device *dev, struct ifreq 
 static int rtw_ioctl_wext_private(struct net_device *dev, struct ifreq *rq)
 {
 #ifdef CONFIG_COMPAT
-	if(is_compat_task())
+	if(in_compat_syscall())
 		return rtw_ioctl_compat_wext_private( dev, rq );
 	else
 #endif // CONFIG_COMPAT
