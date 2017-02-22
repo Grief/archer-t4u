@@ -1,11 +1,11 @@
 archer-t4u
 ==========
-DKMS module for TP-Link AC1300 Wireless Dual Band USB Adapter aka Archer T4U and kernel 4.8.1
+DKMS module for TP-Link AC1300 Wireless Dual Band USB Adapter aka Archer T4U and kernel 4.8.1-4.10
 
 What's that?
 ------------
 This is yet slightly another version of the Realtek 8812 driver. 
-**The driver is supposed to be used only with Archer T4U V1 device and the latest (4.8.1) kernel only.**
+**The driver is supposed to be used only with Archer T4U V1 device and the latest (4.8.1-4.10) kernel only.**
 I took the drivers which are provided by TP-Link on the support site and fixed them to work with the latest kernel.
 
 Why did you make it if there are tons of versions already?
